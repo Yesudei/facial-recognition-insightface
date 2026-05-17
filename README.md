@@ -28,6 +28,7 @@ Vision/
   main.py
   requirements.txt
   face_recognition_app/
+  frontend/
   known_faces/
     PersonName/
       photo1.jpg
@@ -123,6 +124,67 @@ After adding images to `known_faces/` and `test_images/`, you can also run:
 
 ```powershell
 python main.py run-demo
+```
+
+## React Web Interface
+
+The project also includes a React + TypeScript interface in `frontend/`.
+
+Install the Python dependencies and start the API:
+
+```powershell
+pip install -r requirements.txt
+python main.py serve
+```
+
+In a second terminal, install and run the frontend:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open the URL printed by Vite, usually:
+
+```text
+http://127.0.0.1:5173
+```
+
+The web UI uploads images to `POST /api/analyze`. If `face_database.npz` exists,
+the response includes named matches. If it does not exist, the UI still shows
+detected faces, bounding boxes, and embedding metadata.
+
+For a single production-style server, build the frontend first:
+
+```powershell
+cd frontend
+npm install
+npm run build
+cd ..
+python main.py serve
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+### Docker Option
+
+If your local Python version is not compatible with InsightFace, build and run
+the project in Docker:
+
+```powershell
+docker build -t faceid-insightface .
+docker run --rm -p 8000:8000 -v ${PWD}/known_faces:/app/known_faces -v ${PWD}/test_images:/app/test_images -v ${PWD}/outputs:/app/outputs faceid-insightface
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
 ```
 
 ## Threshold Tuning

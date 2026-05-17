@@ -36,6 +36,15 @@ class CliAndBackendTests(unittest.TestCase):
         self.assertEqual(args.command, "recognize")
         self.assertAlmostEqual(args.threshold, 0.42)
 
+    def test_parser_supports_serve_command(self):
+        parser = build_parser()
+
+        args = parser.parse_args(["serve", "--host", "0.0.0.0", "--port", "9000"])
+
+        self.assertEqual(args.command, "serve")
+        self.assertEqual(args.host, "0.0.0.0")
+        self.assertEqual(args.port, 9000)
+
     def test_insightface_backend_module_imports_without_loading_model(self):
         module = importlib.import_module("face_recognition_app.insightface_backend")
 

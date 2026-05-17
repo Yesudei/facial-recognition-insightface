@@ -42,7 +42,13 @@ The code is split into small modules:
 - `database.py` saves and loads known face embeddings.
 - `pipeline.py` handles enrollment and recognition workflow.
 - `insightface_backend.py` connects the project to InsightFace.
+- `web.py` exposes a FastAPI endpoint for image uploads from the web interface.
 - `main.py` provides the command-line interface.
+
+The project also includes a React + TypeScript web interface in `frontend/`.
+It lets a user upload a photo, preview it, call the local `/api/analyze`
+endpoint, inspect face boxes and match confidence, and view the raw JSON
+response.
 
 ## 5. Commands Used
 
@@ -70,9 +76,29 @@ Run tests:
 python -m unittest discover -s tests -v
 ```
 
+Run the web interface:
+
+```powershell
+python main.py serve
+cd frontend
+npm install
+npm run dev
+```
+
+For a single server, run `npm run build` in `frontend/` and then open the
+FastAPI server URL.
+
+The repository also includes a `Dockerfile` that builds the React frontend and
+runs the Python backend on Python 3.11, which is the recommended runtime for
+the InsightFace dependency stack.
+
 ## 6. Results
 
 After running recognition, annotated images are generated in the `outputs/` folder. Each detected face is marked with a bounding box and either the recognized name with similarity score or the label `Unknown`.
+
+In the web interface, the uploaded image is displayed with face bounding boxes
+overlaid in the browser. When a face database exists, the interface also shows
+the best identity match, confidence score, face size, and embedding dimension.
 
 The threshold controls how strict the recognition is. A lower threshold recognizes more faces but can increase false matches. A higher threshold is stricter but can label real known people as unknown.
 

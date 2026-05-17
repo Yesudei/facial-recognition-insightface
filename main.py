@@ -44,6 +44,18 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument("--output-dir", default="outputs")
     demo.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
 
+    serve = subparsers.add_parser(
+        "serve",
+        help="Start the FastAPI backend for the React web interface.",
+    )
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument(
+        "--reload",
+        action="store_true",
+        help="Reload the API server when Python files change.",
+    )
+
     return parser
 
 
@@ -63,6 +75,8 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "run-demo":
             _run_enroll(args)
             _run_recognize(args)
+        elif args.command == "serve":
+            _run_serve(args)
         else:
             parser.error(f"Unknown command: {args.command}")
     except Exception as exc:
@@ -104,6 +118,22 @@ def _run_recognize(args: argparse.Namespace) -> None:
             for match in result.matches
         )
         print(f"- {result.image_path.name}: {labels}")
+
+
+def _run_serve(args: argparse.Namespace) -> None:
+    try:
+        import uvicorn
+    except ImportError as exc:
+        raise ImportError(
+            "FastAPI server dependencies are missing. Run `pip install -r requirements.txt`."
+        ) from exc
+
+    uvicorn.run(
+        "face_recognition_app.web:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+    )
 
 
 if __name__ == "__main__":
