@@ -57,12 +57,15 @@ async def analyze_image(
         raise HTTPException(status_code=413, detail="Image must be 10 MB or smaller.")
 
     suffix = Path(file.filename or "upload.jpg").suffix or ".jpg"
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=True) as tmp:
-        tmp.write(payload)
-        tmp.flush()
+    tmp_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp.write(payload)
+            tmp_path = Path(tmp.name)
+
         try:
             return _analyze_path(
-                image_path=Path(tmp.name),
+                image_path=tmp_path,
                 original_filename=file.filename or "upload",
                 database_path=Path(database),
                 threshold=threshold,
@@ -73,6 +76,9 @@ async def analyze_image(
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         except ImportError as exc:
             raise HTTPException(status_code=500, detail=str(exc)) from exc
+    finally:
+        if tmp_path is not None:
+            tmp_path.unlink(missing_ok=True)
 
 
 def _analyze_path(
