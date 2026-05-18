@@ -19,12 +19,10 @@ This project recognizes faces from images using a pretrained InsightFace model. 
 5. Compares test embeddings with known embeddings using cosine similarity.
 6. Draws names, similarity scores, and bounding boxes on output images.
 
-There is also an assignment report draft in `ASSIGNMENT_REPORT.md`.
-
 ## Folder Structure
 
 ```text
-Vision/
+facial-recognition-insightface/
   main.py
   requirements.txt
   face_recognition_app/
@@ -42,14 +40,14 @@ Example:
 
 ```text
 known_faces/
-  Alice/
-    alice1.jpg
-    alice2.jpg
-  Bob/
-    bob1.jpg
+  lebronjames/
+    lebron1.jpg
+    lebron2.jpg
+  kevindurant/
+    kevindurant1.jpg
 
 test_images/
-  class_photo.jpg
+  group_photo.jpg
 ```
 
 ## Important Python Note
@@ -60,7 +58,7 @@ Recommended: install **Python 3.10 or Python 3.11** from https://www.python.org/
 
 After installing Python 3.11, open PowerShell in this folder:
 
-```powershell
+```
 cd "C:\Users\esude\OneDrive\Desktop\Vision"
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -70,7 +68,7 @@ pip install -r requirements.txt
 
 If PowerShell blocks activation, run this once in the same PowerShell window:
 
-```powershell
+```
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\.venv\Scripts\Activate.ps1
 ```
@@ -100,7 +98,7 @@ test_images/
 
 ### 3. Enroll Known Faces
 
-```powershell
+```
 python main.py enroll --known-dir known_faces --database face_database.npz
 ```
 
@@ -108,7 +106,7 @@ The first InsightFace run may download the `buffalo_l` model package, so interne
 
 ### 4. Recognize Faces
 
-```powershell
+```
 python main.py recognize --test-dir test_images --database face_database.npz --output-dir outputs --threshold 0.35
 ```
 
@@ -122,7 +120,7 @@ outputs/
 
 After adding images to `known_faces/` and `test_images/`, you can also run:
 
-```powershell
+```
 python main.py run-demo
 ```
 
@@ -132,14 +130,14 @@ The project also includes a React + TypeScript interface in `frontend/`.
 
 Install the Python dependencies and start the API:
 
-```powershell
+```
 pip install -r requirements.txt
 python main.py serve
 ```
 
 In a second terminal, install and run the frontend:
 
-```powershell
+```
 cd frontend
 npm install
 npm run dev
@@ -157,7 +155,7 @@ detected faces, bounding boxes, and embedding metadata.
 
 For a single production-style server, build the frontend first:
 
-```powershell
+```
 cd frontend
 npm install
 npm run build
@@ -176,7 +174,7 @@ http://127.0.0.1:8000
 If your local Python version is not compatible with InsightFace, build and run
 the project in Docker:
 
-```powershell
+```
 docker build -t faceid-insightface .
 docker run --rm -p 8000:8000 -v ${PWD}/known_faces:/app/known_faces -v ${PWD}/test_images:/app/test_images -v ${PWD}/outputs:/app/outputs faceid-insightface
 ```
@@ -198,7 +196,7 @@ Default threshold: `0.35`
 
 These tests check the project logic without requiring InsightFace to be installed:
 
-```powershell
+```
 python -m unittest discover -s tests -v
 ```
 
@@ -217,7 +215,7 @@ In this project, InsightFace provides a pretrained model based on this idea. For
 
 Activate your virtual environment and run:
 
-```powershell
+```
 pip install -r requirements.txt
 ```
 
@@ -225,7 +223,7 @@ pip install -r requirements.txt
 
 Use Python 3.10 or 3.11. If it still fails, install Microsoft C++ Build Tools and CMake, then retry:
 
-```powershell
+```
 python -m pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
@@ -238,7 +236,7 @@ Use clearer images with visible faces. For `known_faces`, use one person per pho
 
 Increase the threshold:
 
-```powershell
+```
 python main.py recognize --threshold 0.45
 ```
 
