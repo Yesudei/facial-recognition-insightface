@@ -8,7 +8,7 @@ import {
   RefreshCcw,
   ScanFace,
   Upload,
-  X
+  X,
 } from "lucide-react";
 import { ChangeEvent, DragEvent, useEffect, useState } from "react";
 
@@ -45,7 +45,10 @@ export default function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalyzeResult | null>(null);
   const [error, setError] = useState("");
-  const [imageSize, setImageSize] = useState<ImageSize>({ width: 0, height: 0 });
+  const [imageSize, setImageSize] = useState<ImageSize>({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     if (!file) {
@@ -59,7 +62,8 @@ export default function App() {
   }, [file]);
 
   const primaryFace = result?.faces[0] ?? null;
-  const confidence = primaryFace?.score == null ? null : Math.round(primaryFace.score * 100);
+  const confidence =
+    primaryFace?.score == null ? null : Math.round(primaryFace.score * 100);
 
   function handleFile(nextFile?: File) {
     if (!nextFile) return;
@@ -108,7 +112,7 @@ export default function App() {
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
@@ -118,7 +122,8 @@ export default function App() {
       const data = (await response.json()) as AnalyzeResult;
       setResult(data);
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Зургийг шинжилж чадсангүй.";
+      const message =
+        caught instanceof Error ? caught.message : "Зургийг шинжилж чадсангүй.";
       setError(message);
     } finally {
       setIsAnalyzing(false);
@@ -143,7 +148,12 @@ export default function App() {
                 <h2>Зураг оруулах</h2>
               </div>
               {file ? (
-                <button className="icon-button" type="button" onClick={reset} aria-label="Зураг арилгах">
+                <button
+                  className="icon-button"
+                  type="button"
+                  onClick={reset}
+                  aria-label="Зураг арилгах"
+                >
                   <X aria-hidden="true" />
                 </button>
               ) : null}
@@ -176,7 +186,7 @@ export default function App() {
                     onLoad={(event) => {
                       setImageSize({
                         width: event.currentTarget.naturalWidth,
-                        height: event.currentTarget.naturalHeight
+                        height: event.currentTarget.naturalHeight,
                       });
                     }}
                   />
@@ -201,7 +211,11 @@ export default function App() {
                 disabled={!file || isAnalyzing}
                 onClick={analyzeImage}
               >
-                {isAnalyzing ? <Loader2 className="spin" aria-hidden="true" /> : <ScanFace aria-hidden="true" />}
+                {isAnalyzing ? (
+                  <Loader2 className="spin" aria-hidden="true" />
+                ) : (
+                  <ScanFace aria-hidden="true" />
+                )}
                 {isAnalyzing ? "Шинжилж байна" : "Шинжлэх"}
               </button>
             </div>
@@ -236,7 +250,10 @@ export default function App() {
                 <div className="annotated-image">
                   <img src={previewUrl} alt="Шинжилсэн зураг" />
                   {imageSize.width > 0 && imageSize.height > 0 ? (
-                    <svg viewBox={`0 0 ${imageSize.width} ${imageSize.height}`} preserveAspectRatio="none">
+                    <svg
+                      viewBox={`0 0 ${imageSize.width} ${imageSize.height}`}
+                      preserveAspectRatio="none"
+                    >
                       {result.faces.map((face, index) => (
                         <g key={`${face.bbox.join("-")}-${index}`}>
                           <rect
@@ -244,9 +261,14 @@ export default function App() {
                             y={face.bbox[1]}
                             width={face.bbox[2] - face.bbox[0]}
                             height={face.bbox[3] - face.bbox[1]}
-                            className={face.is_unknown ? "unknown-box" : "known-box"}
+                            className={
+                              face.is_unknown ? "unknown-box" : "known-box"
+                            }
                           />
-                          <text x={face.bbox[0]} y={Math.max(18, face.bbox[1] - 8)}>
+                          <text
+                            x={face.bbox[0]}
+                            y={Math.max(18, face.bbox[1] - 8)}
+                          >
                             {face.is_unknown ? "Танигдаагүй" : face.name}
                           </text>
                         </g>
@@ -256,26 +278,38 @@ export default function App() {
                 </div>
 
                 <div className="metrics">
-                  <Metric label="Олдсон царай" value={String(result.faces_detected)} />
                   <Metric
-                    label="Нэр"
-                    value={primaryFace ? (primaryFace.is_unknown ? "Танигдаагүй" : primaryFace.name) : "Царай олдсонгүй"}
+                    label="Олдсон царай"
+                    value={String(result.faces_detected)}
                   />
                   <Metric
-                    label="Итгэлцүүр"
+                    label="Нэр"
+                    value={
+                      primaryFace
+                        ? primaryFace.is_unknown
+                          ? "Танигдаагүй"
+                          : primaryFace.name
+                        : "Царай олдсонгүй"
+                    }
+                  />
+                  <Metric
+                    label="Итгэл /Confidence/"
                     value={confidence == null ? "Тохиролгүй" : `${confidence}%`}
                     barValue={confidence ?? 0}
                   />
                   <Metric
                     label="Хэмжээ"
-                    value={primaryFace ? `${Math.round(primaryFace.width)} x ${Math.round(primaryFace.height)} px` : "-"}
+                    value={
+                      primaryFace
+                        ? `${Math.round(primaryFace.width)} x ${Math.round(primaryFace.height)} px`
+                        : "-"
+                    }
                   />
                   <Metric
                     label="Вектор"
                     value={primaryFace ? `${primaryFace.embedding_size}` : "-"}
                   />
                 </div>
-
               </div>
             ) : (
               <div className="message-state">
@@ -302,7 +336,7 @@ export default function App() {
 
 function ResultBadge({
   result,
-  isAnalyzing
+  isAnalyzing,
 }: {
   result: AnalyzeResult | null;
   isAnalyzing: boolean;
@@ -316,8 +350,14 @@ function ResultBadge({
   }
 
   return (
-    <span className={`result-badge ${result.faces_detected > 0 ? "success" : "warning"}`}>
-      {result.faces_detected > 0 ? <CheckCircle2 aria-hidden="true" /> : <AlertCircle aria-hidden="true" />}
+    <span
+      className={`result-badge ${result.faces_detected > 0 ? "success" : "warning"}`}
+    >
+      {result.faces_detected > 0 ? (
+        <CheckCircle2 aria-hidden="true" />
+      ) : (
+        <AlertCircle aria-hidden="true" />
+      )}
       {result.faces_detected} царай
     </span>
   );
@@ -326,7 +366,7 @@ function ResultBadge({
 function Metric({
   label,
   value,
-  barValue
+  barValue,
 }: {
   label: string;
   value: string;
